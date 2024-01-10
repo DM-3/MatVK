@@ -1,6 +1,7 @@
 #include <iostream>
 #include "MatVK/matvk.hpp"
 
-void printHello() {
+
+void matvk::printHello() {
     std::cout << "Hello MatVK" << std::endl;
 }

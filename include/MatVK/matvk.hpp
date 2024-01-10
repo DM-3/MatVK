@@ -1,3 +1,8 @@
 #pragma once
+#include "vulkan/vulkan.hpp"
 
-void printHello();
+
+namespace matvk 
+{
+    void printHello();
+};

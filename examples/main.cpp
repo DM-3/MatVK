@@ -1,6 +1,6 @@
 #include "MatVK/matvk.hpp"
 
 int main() {
-    printHello();
+    matvk::printHello();
     return 0;
 }
