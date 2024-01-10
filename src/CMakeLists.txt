@@ -10,7 +10,8 @@ target_include_directories(MatVK PRIVATE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 find_package(Vulkan REQUIRED)
-target_link_libraries(MatVK PRIVATE ${Vulkan_LIBRARIES})
+target_include_directories(MatVK PUBLIC ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(MatVK PUBLIC ${Vulkan_LIBRARIES})
 
 
 # Install
