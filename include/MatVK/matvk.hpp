@@ -52,6 +52,7 @@ namespace matvk
     class DotOperation;
 
     class Assignment;
+    class QueueBase;
 
 
 
@@ -85,6 +86,15 @@ namespace matvk
     {
     public:
         Queue();
+        Queue(std::initializer_list<Assignment> assignments);
+        Queue& operator<<(Assignment assignment);
+        Queue& operator<<(std::initializer_list<Assignment> assignments);
+        void endRecording();
+        void execute(bool immediateWait = true);
+        void waitFinished();
+
+    private:
+        std::shared_ptr<QueueBase> _base;
     };
 
 
@@ -93,19 +103,27 @@ namespace matvk
     class ExpressionBase
     {
     public:
-        ExpressionBase();
+        ExpressionBase(std::vector<std::shared_ptr<ExpressionBase>> operands);
+        virtual void record() = 0;
+    
+    protected:
+        std::vector<std::shared_ptr<ExpressionBase>> _operands;
     };
 
     template<element E>
     class Expression
     {
     protected:
-        Expression();
+        Expression(std::shared_ptr<ExpressionBase> base);
+        std::shared_ptr<ExpressionBase> _base;
     };
 
 
     class MatrixBase : public ExpressionBase
     {
+    public:
+        void record();
+
     private:
         template<element E> friend class Matrix;
         MatrixBase();
@@ -113,6 +131,9 @@ namespace matvk
 
     class ScalarBase : public ExpressionBase
     {
+    public:
+        void record();
+
     private:
         template<element E> friend class Scalar;
         ScalarBase();
@@ -120,6 +141,9 @@ namespace matvk
 
     class ConstantBase : public ExpressionBase
     {
+    public:
+        void record();
+
     private:
         template<element E> friend class Constant;
         ConstantBase();
@@ -129,17 +153,26 @@ namespace matvk
     class InfixOperation : public ExpressionBase
     {
     public:
+        void record();
+
+    public:
         InfixOperation();
     };
 
     class PrefixOperation : public ExpressionBase
     {
     public:
+        void record();
+
+    public:
         PrefixOperation();
     };
 
     class DotOperation : public ExpressionBase
     {
+    public:
+        void record();
+
     public:
         DotOperation();
     };
@@ -149,7 +182,10 @@ namespace matvk
     {
     private:
         template<element E> friend class Matrix;
-        Assignment();
+        Assignment(std::shared_ptr<ExpressionBase> src, std::shared_ptr<ExpressionBase> dst);
+
+        std::shared_ptr<ExpressionBase> _src;
+        std::shared_ptr<ExpressionBase> _dst;
     };
 
 
@@ -160,38 +196,83 @@ namespace matvk
     // accessible classes
 
     template<element E>
-    Matrix<E>::Matrix() {}
+    Matrix<E>::Matrix() : Expression<E>(std::static_pointer_cast<ExpressionBase>
+        (std::shared_ptr<MatrixBase>(new MatrixBase())))
+    {}
+
 
     template<element E>
-    Scalar<E>::Scalar() {}
+    Scalar<E>::Scalar() : Expression<E>(std::static_pointer_cast<ExpressionBase>
+        (std::shared_ptr<ScalarBase>(new ScalarBase())))
+    {}
+
 
     template<element E>
-    Constant<E>::Constant() {}
+    Constant<E>::Constant() : Expression<E>(std::static_pointer_cast<ExpressionBase>
+        (std::shared_ptr<ConstantBase>(new ConstantBase())))
+    {}
+
 
     Queue::Queue() {}
+
+    Queue::Queue(std::initializer_list<Assignment> assignments) {}
+
+    Queue& Queue::operator<<(Assignment assignment) {}
+
+    Queue& Queue::operator<<(std::initializer_list<Assignment> assignments) {}
+
+    void Queue::endRecording() {}
+
+    void Queue::execute(bool immediateWait = true) {}
+
+    void Queue::waitFinished() {}
+
 
 
     // inaccessible classes
 
-    ExpressionBase::ExpressionBase() {}
+    ExpressionBase::ExpressionBase(std::vector<std::shared_ptr<ExpressionBase>> operands) :
+        _operands(operands)
+    {}
+
 
     template<element E>
-    Expression<E>::Expression() {}
+    Expression<E>::Expression(std::shared_ptr<ExpressionBase> base) :
+        _base(base)
+    {}
 
 
-    MatrixBase::MatrixBase() {}
+    MatrixBase::MatrixBase() : ExpressionBase({}) {}
 
-    ScalarBase::ScalarBase() {}
-
-    ConstantBase::ConstantBase() {}
+    void MatrixBase::record() {}
 
 
-    InfixOperation::InfixOperation() {}
+    ScalarBase::ScalarBase() : ExpressionBase({}) {}
 
-    PrefixOperation::PrefixOperation() {}
+    void ScalarBase::record() {}
+    
 
-    DotOperation::DotOperation() {}
+    ConstantBase::ConstantBase() : ExpressionBase({}) {}
 
+    void ConstantBase::record() {}
+    
 
-    Assignment::Assignment() {}
+    InfixOperation::InfixOperation() : ExpressionBase({}) {}
+
+    void InfixOperation::record() {}
+    
+
+    PrefixOperation::PrefixOperation() : ExpressionBase({}) {}
+
+    void PrefixOperation::record() {}
+    
+
+    DotOperation::DotOperation() : ExpressionBase({}) {}
+
+    void DotOperation::record() {}
+    
+
+    Assignment::Assignment(std::shared_ptr<ExpressionBase> src, std::shared_ptr<ExpressionBase> dst) :
+        _src(src), _dst(dst)
+    {}
 };
