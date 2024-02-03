@@ -64,27 +64,27 @@ namespace matvk
     class Matrix : public Expression<E>
     {
     public:
-        Matrix() {};
+        Matrix();
     };
 
     template<element E>
     class Scalar : public Expression<E>
     {
     public:
-        Scalar() {};
+        Scalar();
     };
 
     template<element E>
     class Constant : public Expression<E>
     {
     public:
-        Constant() {};
+        Constant();
     };
 
     class Queue 
     {
     public:
-        Queue() {};
+        Queue();
     };
 
 
@@ -93,14 +93,14 @@ namespace matvk
     class ExpressionBase
     {
     public:
-        ExpressionBase() {};
+        ExpressionBase();
     };
 
     template<element E>
     class Expression
     {
     protected:
-        Expression() {};
+        Expression();
     };
 
 
@@ -108,40 +108,40 @@ namespace matvk
     {
     private:
         template<element E> friend class Matrix;
-        MatrixBase() {};
+        MatrixBase();
     };
 
     class ScalarBase : public ExpressionBase
     {
     private:
         template<element E> friend class Scalar;
-        ScalarBase() {};
+        ScalarBase();
     };
 
     class ConstantBase : public ExpressionBase
     {
     private:
         template<element E> friend class Constant;
-        ConstantBase() {};
+        ConstantBase();
     };
 
 
     class InfixOperation : public ExpressionBase
     {
     public:
-        InfixOperation() {};
+        InfixOperation();
     };
 
     class PrefixOperation : public ExpressionBase
     {
     public:
-        PrefixOperation() {};
+        PrefixOperation();
     };
 
     class DotOperation : public ExpressionBase
     {
     public:
-        DotOperation() {};
+        DotOperation();
     };
 
 
@@ -149,6 +149,49 @@ namespace matvk
     {
     private:
         template<element E> friend class Matrix;
-        Assignment() {};
+        Assignment();
     };
+
+
+
+
+//---- class method definitions
+
+    // accessible classes
+
+    template<element E>
+    Matrix<E>::Matrix() {}
+
+    template<element E>
+    Scalar<E>::Scalar() {}
+
+    template<element E>
+    Constant<E>::Constant() {}
+
+    Queue::Queue() {}
+
+
+    // inaccessible classes
+
+    ExpressionBase::ExpressionBase() {}
+
+    template<element E>
+    Expression<E>::Expression() {}
+
+
+    MatrixBase::MatrixBase() {}
+
+    ScalarBase::ScalarBase() {}
+
+    ConstantBase::ConstantBase() {}
+
+
+    InfixOperation::InfixOperation() {}
+
+    PrefixOperation::PrefixOperation() {}
+
+    DotOperation::DotOperation() {}
+
+
+    Assignment::Assignment() {}
 };
