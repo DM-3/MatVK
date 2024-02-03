@@ -153,28 +153,29 @@ namespace matvk
     class InfixOperation : public ExpressionBase
     {
     public:
+        InfixOperation(std::shared_ptr<ExpressionBase> left, 
+            std::shared_ptr<ExpressionBase> right, char opSymbol);
         void record();
 
-    public:
-        InfixOperation();
+    private:
+        char _opSymbol;
     };
 
     class PrefixOperation : public ExpressionBase
     {
     public:
+        PrefixOperation(std::vector<std::shared_ptr<ExpressionBase>> operands, std::string name);
         void record();
 
-    public:
-        PrefixOperation();
+    private:
+        std::string _name;
     };
 
     class DotOperation : public ExpressionBase
     {
     public:
+        DotOperation(std::shared_ptr<ExpressionBase> left, std::shared_ptr<ExpressionBase> right);
         void record();
-
-    public:
-        DotOperation();
     };
 
 
@@ -191,7 +192,7 @@ namespace matvk
 
 
 
-//---- class method definitions
+//---- template class definitions
 
     // accessible classes
 
@@ -213,66 +214,12 @@ namespace matvk
     {}
 
 
-    Queue::Queue() {}
-
-    Queue::Queue(std::initializer_list<Assignment> assignments) {}
-
-    Queue& Queue::operator<<(Assignment assignment) {}
-
-    Queue& Queue::operator<<(std::initializer_list<Assignment> assignments) {}
-
-    void Queue::endRecording() {}
-
-    void Queue::execute(bool immediateWait = true) {}
-
-    void Queue::waitFinished() {}
-
-
 
     // inaccessible classes
-
-    ExpressionBase::ExpressionBase(std::vector<std::shared_ptr<ExpressionBase>> operands) :
-        _operands(operands)
-    {}
-
 
     template<element E>
     Expression<E>::Expression(std::shared_ptr<ExpressionBase> base) :
         _base(base)
     {}
 
-
-    MatrixBase::MatrixBase() : ExpressionBase({}) {}
-
-    void MatrixBase::record() {}
-
-
-    ScalarBase::ScalarBase() : ExpressionBase({}) {}
-
-    void ScalarBase::record() {}
-    
-
-    ConstantBase::ConstantBase() : ExpressionBase({}) {}
-
-    void ConstantBase::record() {}
-    
-
-    InfixOperation::InfixOperation() : ExpressionBase({}) {}
-
-    void InfixOperation::record() {}
-    
-
-    PrefixOperation::PrefixOperation() : ExpressionBase({}) {}
-
-    void PrefixOperation::record() {}
-    
-
-    DotOperation::DotOperation() : ExpressionBase({}) {}
-
-    void DotOperation::record() {}
-    
-
-    Assignment::Assignment(std::shared_ptr<ExpressionBase> src, std::shared_ptr<ExpressionBase> dst) :
-        _src(src), _dst(dst)
-    {}
 };
