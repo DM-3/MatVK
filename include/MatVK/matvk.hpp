@@ -113,6 +113,12 @@ namespace matvk
     template<element E>
     class Expression
     {
+    public:
+        friend Expression<E> operator+ <>(const Expression<E> left, const Expression<E> right);
+        friend Expression<E> operator- <>(const Expression<E> left, const Expression<E> right);
+        friend Expression<E> operator* <>(const Expression<E> left, const Expression<E> right);
+        friend Expression<E> operator/ <>(const Expression<E> left, const Expression<E> right);
+
     protected:
         Expression(std::shared_ptr<ExpressionBase> base);
         std::shared_ptr<ExpressionBase> _base;
@@ -221,5 +227,38 @@ namespace matvk
     Expression<E>::Expression(std::shared_ptr<ExpressionBase> base) :
         _base(base)
     {}
+
+
+
+
+//---- template function definitions
+
+    template<element E>
+    Expression<E> operator+(const Expression<E> left, const Expression<E> right) 
+    {
+        return Expression<E>(std::static_pointer_cast<ExpressionBase>(
+            std::make_shared<InfixOperation>(left.base, right.base, '+')));
+    }
+
+    template<element E>
+    Expression<E> operator-(const Expression<E> left, const Expression<E> right) 
+    {
+        return Expression<E>(std::static_pointer_cast<ExpressionBase>(
+            std::make_shared<InfixOperation>(left.base, right.base, '-')));
+    }
+
+    template<element E>
+    Expression<E> operator*(const Expression<E> left, const Expression<E> right) 
+    {
+        return Expression<E>(std::static_pointer_cast<ExpressionBase>(
+            std::make_shared<InfixOperation>(left.base, right.base, '*')));
+    }
+
+    template<element E>
+    Expression<E> operator/(const Expression<E> left, const Expression<E> right) 
+    {
+        return Expression<E>(std::static_pointer_cast<ExpressionBase>(
+            std::make_shared<InfixOperation>(left.base, right.base, '/')));
+    }
 
 };
