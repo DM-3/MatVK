@@ -66,6 +66,7 @@ namespace matvk
     {
     public:
         Matrix();
+        Assignment operator=(const Expression<E>& src);
     };
 
     template<element E>
@@ -113,6 +114,10 @@ namespace matvk
     template<element E>
     class Expression
     {
+        friend class Matrix<E>;
+        friend class Scalar<E>;
+        friend class Constant<E>;
+        
     public:
         friend Expression<E> operator+ <>(const Expression<E> left, const Expression<E> right);
         friend Expression<E> operator- <>(const Expression<E> left, const Expression<E> right);
@@ -207,6 +212,12 @@ namespace matvk
         (std::shared_ptr<MatrixBase>(new MatrixBase())))
     {}
 
+    template<element E>
+    Assignment Matrix<E>::operator=(const Expression<E>& src)
+    {
+        return Assignment(src._base, this->_base);
+    }
+
 
     template<element E>
     Scalar<E>::Scalar() : Expression<E>(std::static_pointer_cast<ExpressionBase>
@@ -237,28 +248,28 @@ namespace matvk
     Expression<E> operator+(const Expression<E> left, const Expression<E> right) 
     {
         return Expression<E>(std::static_pointer_cast<ExpressionBase>(
-            std::make_shared<InfixOperation>(left.base, right.base, '+')));
+            std::make_shared<InfixOperation>(left._base, right._base, '+')));
     }
 
     template<element E>
     Expression<E> operator-(const Expression<E> left, const Expression<E> right) 
     {
         return Expression<E>(std::static_pointer_cast<ExpressionBase>(
-            std::make_shared<InfixOperation>(left.base, right.base, '-')));
+            std::make_shared<InfixOperation>(left._base, right._base, '-')));
     }
 
     template<element E>
     Expression<E> operator*(const Expression<E> left, const Expression<E> right) 
     {
         return Expression<E>(std::static_pointer_cast<ExpressionBase>(
-            std::make_shared<InfixOperation>(left.base, right.base, '*')));
+            std::make_shared<InfixOperation>(left._base, right._base, '*')));
     }
 
     template<element E>
     Expression<E> operator/(const Expression<E> left, const Expression<E> right) 
     {
         return Expression<E>(std::static_pointer_cast<ExpressionBase>(
-            std::make_shared<InfixOperation>(left.base, right.base, '/')));
+            std::make_shared<InfixOperation>(left._base, right._base, '/')));
     }
 
 };
