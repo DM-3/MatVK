@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <initializer_list>
+#include <inttypes.h>
 
 #include "vulkan/vulkan.hpp"
 
@@ -32,6 +33,7 @@ namespace matvk
 
     // accessible classes
 
+    struct Size2D;
     template<element E> class Matrix;
     template<element E> class Scalar;
     template<element E> class Constant;
@@ -61,11 +63,22 @@ namespace matvk
 
     // accessible classes
 
+    struct Size2D
+    {
+        Size2D(uint32_t width, uint32_t height);
+        Size2D operator+(const Size2D other);
+        Size2D operator-(const Size2D other);
+        
+        uint32_t x;
+        uint32_t y;
+    };
+
     template<element E>
     class Matrix : public Expression<E>
     {
     public:
-        Matrix();
+        Matrix(Size2D size);
+        Matrix(uint32_t cols, uint32_t rows);
         Assignment operator=(const Expression<E>& src);
     };
 
@@ -117,7 +130,7 @@ namespace matvk
         friend class Matrix<E>;
         friend class Scalar<E>;
         friend class Constant<E>;
-        
+
     public:
         friend Expression<E> operator+ <>(const Expression<E> left, const Expression<E> right);
         friend Expression<E> operator- <>(const Expression<E> left, const Expression<E> right);
@@ -137,7 +150,10 @@ namespace matvk
 
     private:
         template<element E> friend class Matrix;
-        MatrixBase();
+        MatrixBase(Size2D size);
+
+        Size2D _extents;
+        Size2D _offset;
     };
 
     class ScalarBase : public ExpressionBase
@@ -208,8 +224,12 @@ namespace matvk
     // accessible classes
 
     template<element E>
-    Matrix<E>::Matrix() : Expression<E>(std::static_pointer_cast<ExpressionBase>
-        (std::shared_ptr<MatrixBase>(new MatrixBase())))
+    Matrix<E>::Matrix(Size2D size) : Expression<E>(std::static_pointer_cast<ExpressionBase>
+        (std::shared_ptr<MatrixBase>(new MatrixBase(size))))
+    {}
+
+    template<element E>
+    Matrix<E>::Matrix(uint32_t cols, uint32_t rows) : Matrix(Size2D(cols, rows))
     {}
 
     template<element E>

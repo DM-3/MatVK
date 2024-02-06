@@ -16,6 +16,21 @@ namespace matvk
 
     // accessible classes
 
+    Size2D::Size2D(uint32_t width, uint32_t height) :
+        x(width), y(height)
+    {}
+
+    Size2D Size2D::operator+(const Size2D other)
+    {
+        return { x + other.x, y + other.y };
+    }
+
+    Size2D Size2D::operator-(const Size2D other)
+    {
+        return { x - other.x, y - other.y };
+    }
+    
+
     Queue::Queue() {}
 
     Queue::Queue(std::initializer_list<Assignment> assignments) {}
@@ -39,7 +54,9 @@ namespace matvk
     {}
 
 
-    MatrixBase::MatrixBase() : ExpressionBase({}) {}
+    MatrixBase::MatrixBase(Size2D size) : 
+        ExpressionBase({}), _extents(size), _offset(Size2D(0, 0)) 
+    {}
 
     void MatrixBase::record() {}
 
