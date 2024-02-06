@@ -3,7 +3,21 @@ project(MatVK)
 
 # Build
 add_library(MatVK)
-target_sources(MatVK PRIVATE matvk.cpp)
+target_sources(MatVK PRIVATE 
+    "matvk.cpp"
+
+    "queue.cpp"
+    "assignment.cpp"
+    
+    "expressionBase.cpp"
+        "matrixBase.cpp"
+            "matrixSubres.cpp"
+        "scalarBase.cpp"
+        "constantBase.cpp"
+        "infixOperation.cpp"
+        "prefixOperation.cpp"
+        "dotOperation.cpp"
+)
 
 target_include_directories(MatVK PRIVATE 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>

@@ -7,8 +7,6 @@
 #include <initializer_list>
 #include <inttypes.h>
 
-#include "vulkan/vulkan.hpp"
-
 
 
 namespace matvk 
@@ -55,6 +53,11 @@ namespace matvk
 
     class Assignment;
     class QueueBase;
+
+
+    // hidden classes
+
+    class MatrixSubres;
 
 
 
@@ -152,8 +155,10 @@ namespace matvk
         template<element E> friend class Matrix;
         MatrixBase(Size2D size);
 
+        std::shared_ptr<MatrixSubres> _sub;
         Size2D _extents;
         Size2D _offset;
+        uint8_t _transpose = 0;
     };
 
     class ScalarBase : public ExpressionBase
