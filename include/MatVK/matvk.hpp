@@ -82,6 +82,19 @@ namespace matvk
     public:
         Matrix(Size2D size);
         Matrix(uint32_t cols, uint32_t rows);
+        Matrix(const Matrix<E>& other);
+        Matrix(std::shared_ptr<MatrixBase> base);
+    
+        size_t nElems() const;
+
+        void operator<<(std::vector<E>& src);
+        void operator>>(std::vector<E>& dst);
+
+        Matrix operator() (Size2D extents);
+        Matrix operator() (uint32_t cols, uint32_t rows);
+        Matrix operator[] (Size2D offset);
+        Matrix T();
+
         Assignment operator=(const Expression<E>& src);
     };
 
@@ -149,6 +162,15 @@ namespace matvk
     class MatrixBase : public ExpressionBase
     {
     public:
+        size_t nElems() const;
+
+        void write(void* src, size_t elemSize);
+        void read(void* dst, size_t elemSize);
+
+        std::shared_ptr<MatrixBase> resize(Size2D extents);
+        std::shared_ptr<MatrixBase> offset(Size2D offset);
+        std::shared_ptr<MatrixBase> transpose();
+
         void record();
 
     private:
@@ -236,6 +258,67 @@ namespace matvk
     template<element E>
     Matrix<E>::Matrix(uint32_t cols, uint32_t rows) : Matrix(Size2D(cols, rows))
     {}
+
+    template<element E>
+    Matrix<E>::Matrix(const Matrix<E>& other) : Expression<E>(
+        std::static_pointer_cast<ExpressionBase>(std::shared_ptr<MatrixBase>
+        (new MatrixBase(*std::static_pointer_cast<MatrixBase>(other._base)))))
+    {}
+
+    template<element E>
+    Matrix<E>::Matrix(std::shared_ptr<MatrixBase> base) : 
+        Expression<E>(std::static_pointer_cast<ExpressionBase>(base))
+    {}
+
+    template<element E>
+    size_t Matrix<E>::nElems() const
+    {
+        return std::static_pointer_cast<MatrixBase>(this->_base)->nElems();
+    }
+
+    template<element E>
+    void Matrix<E>::operator<<(std::vector<E>& src) 
+    { 
+        if (src.size() < nElems())
+            src.resize(nElems());
+        
+        return std::static_pointer_cast<MatrixBase>(this->_base)->
+            write(static_cast<void*>(src.data()), sizeof(E));
+    }
+
+    template<element E>
+    void Matrix<E>::operator>>(std::vector<E>& dst) 
+    { 
+        if (dst.size() < nElems())
+            dst.resize(nElems());
+    
+        return std::static_pointer_cast<MatrixBase>(this->_base)->
+            read(static_cast<void*>(dst.data()), sizeof(E));
+    }
+
+    template<element E>
+    Matrix<E> Matrix<E>::operator() (Size2D extents) 
+    { 
+        return Matrix<E>(std::static_pointer_cast<MatrixBase>(this->_base)->resize(extents));
+    }
+
+    template<element E>
+    Matrix<E> Matrix<E>::operator() (uint32_t cols, uint32_t rows) 
+    { 
+        return operator()(Size2D(cols, rows));
+    }
+
+    template<element E>
+    Matrix<E> Matrix<E>::operator[] (Size2D offset) 
+    { 
+        return Matrix<E>(std::static_pointer_cast<MatrixBase>(this->_base)->offset(offset));
+    }
+
+    template<element E>
+    Matrix<E> Matrix<E>::T() 
+    { 
+        return Matrix<E>(std::static_pointer_cast<MatrixBase>(this->_base)->transpose());
+    }
 
     template<element E>
     Assignment Matrix<E>::operator=(const Expression<E>& src)
