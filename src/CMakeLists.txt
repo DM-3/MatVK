@@ -17,6 +17,8 @@ target_sources(MatVK PRIVATE
         "infixOperation.cpp"
         "prefixOperation.cpp"
         "dotOperation.cpp"
+
+    "vulkanBase.cpp"
 )
 
 target_include_directories(MatVK PRIVATE 
