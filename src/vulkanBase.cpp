@@ -45,16 +45,48 @@ namespace matvk
     }
 
 
-    std::mutex singleton_mutex;
-
-    VKB& VKB::getVKB()
+    const uint32_t VKB::findMemoryTypeIndex(uint32_t typeFilter, vk::MemoryPropertyFlags properties)
     {
-        std::lock_guard<std::mutex> lock(singleton_mutex);
-        if (!_vkb)
-            _vkb = std::unique_ptr<VKB>(new VKB());
+        auto props = physicalDevice().getMemoryProperties();
+       	for (uint32_t i = 0; i < props.memoryTypeCount; i++)
+            if ((typeFilter & (1 << i)) && (props.memoryTypes[i].propertyFlags & properties) == properties)
+                return i;
 
-        return *_vkb;
+    	throw std::runtime_error("Unable to find memory with type: " + std::to_string(typeFilter)
+            + " and properties: " + std::to_string(uint32_t(properties)));
+        return 0;
     }
+
+
+    vk::CommandBuffer VKB::startOneTimeCommandBuffer() {
+        vk::CommandBufferAllocateInfo commandBufferAI; commandBufferAI
+            .setCommandBufferCount(1)
+            .setCommandPool(commandPool())
+            .setLevel(vk::CommandBufferLevel::ePrimary);
+
+        vk::CommandBufferBeginInfo commandBufferBI; commandBufferBI
+            .setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+
+        auto commandBuffer = device().allocateCommandBuffers(commandBufferAI)[0];
+        commandBuffer.begin(commandBufferBI);
+
+        return commandBuffer;
+    }
+
+    void VKB::endOneTimeCommandBuffer(vk::CommandBuffer commandBuffer) {
+        commandBuffer.end();
+
+        vk::Fence fence = device().createFence(vk::FenceCreateInfo());
+        vk::SubmitInfo submit; submit
+            .setCommandBufferCount(1)
+            .setCommandBuffers(commandBuffer);
+
+        queue().submit(submit, fence);
+
+        device().waitForFences(fence, vk::True, std::numeric_limits<uint64_t>::max());
+        device().freeCommandBuffers(commandPool(), commandBuffer);
+    }
+
 
     VKB::VKB()
     {
@@ -64,6 +96,17 @@ namespace matvk
         createDevice();
         createCommandPool();
     }
+
+    std::mutex singleton_mutex;
+    VKB& VKB::getVKB()
+    {
+        std::lock_guard<std::mutex> lock(singleton_mutex);
+        if (!_vkb)
+            _vkb = std::unique_ptr<VKB>(new VKB());
+
+        return *_vkb;
+    }
+
 
     void VKB::createInstance()
     {
