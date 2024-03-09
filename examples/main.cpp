@@ -1,13 +1,14 @@
 #include "MatVK/matvk.hpp"
 #include <iostream>
 
+
 int main() 
 {
     using namespace matvk;
 
     printHello();
 
-    Size2D size(32, 32);
+    Size2D size(8, 8);
 
     Matrix<float> mA(size), mB(size);
 	Matrix<int> mC(64, 64), mD(64, 64);
@@ -15,7 +16,7 @@ int main()
 	Scalar<float> sA;
 	Scalar<int> sB;
 
-    std::vector<float> data = { 1.0 };
+    std::vector<float> data(mA.nElems(), 1.0f);
     mA << data;
     mB << data;
 

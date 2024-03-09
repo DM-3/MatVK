@@ -89,10 +89,37 @@ namespace matvk
     }
 
 
-    void MatrixSubres::write(void* src, ElemType elemType)
-    {}
+    void MatrixSubres::write(Size2D extents, Size2D offset, void* src)
+    {
+        StagingBuffer buffer(extents.x * extents.y * sizeofType(_elemType));
+        memcpy(buffer, src, buffer.size());
 
-    void MatrixSubres::read(void* dst, ElemType elemType)
-    {}
+        vk::ImageSubresourceLayers subresource(vk::ImageAspectFlagBits::eColor, 0, 0, 1);
+        vk::BufferImageCopy region; region
+            .setImageExtent(vk::Extent3D(extents.x, extents.y, 1))
+            .setImageOffset(vk::Offset3D(offset.x, offset.y, 0 ))
+            .setImageSubresource(subresource);
+
+        auto cmd = VKB::startOneTimeCommandBuffer();
+        cmd.copyBufferToImage(buffer.buffer(), _image, vk::ImageLayout::eGeneral, region);
+        VKB::endOneTimeCommandBuffer(cmd);
+    }
+
+    void MatrixSubres::read(Size2D extents, Size2D offset, void* dst)
+    {
+        StagingBuffer buffer(extents.x * extents.y * sizeofType(_elemType));
+
+        vk::ImageSubresourceLayers subresource(vk::ImageAspectFlagBits::eColor, 0, 0, 1);
+        vk::BufferImageCopy region; region
+            .setImageExtent(vk::Extent3D(extents.x, extents.y, 1))
+            .setImageOffset(vk::Offset3D(offset.x, offset.y, 0 ))
+            .setImageSubresource(subresource);
+
+        auto cmd = VKB::startOneTimeCommandBuffer();
+        cmd.copyImageToBuffer(_image, vk::ImageLayout::eGeneral, buffer.buffer(), region);
+        VKB::endOneTimeCommandBuffer(cmd);
+
+        memcpy(dst, buffer, buffer.size());
+    }
 
 };

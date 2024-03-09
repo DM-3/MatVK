@@ -176,8 +176,8 @@ namespace matvk
     public:
         size_t nElems() const;
 
-        void write(void* src, ElemType elemType);
-        void read(void* dst, ElemType elemType);
+        void write(void* src);
+        void read(void* dst);
 
         std::shared_ptr<MatrixBase> resize(Size2D extents);
         std::shared_ptr<MatrixBase> offset(Size2D offset);
@@ -295,7 +295,7 @@ namespace matvk
             src.resize(nElems());
         
         return std::static_pointer_cast<MatrixBase>(this->_base)->
-            write(static_cast<void*>(src.data()), enumerateType<E>());
+            write(static_cast<void*>(src.data()));
     }
 
     template<element E>
@@ -305,7 +305,7 @@ namespace matvk
             dst.resize(nElems());
     
         return std::static_pointer_cast<MatrixBase>(this->_base)->
-            read(static_cast<void*>(dst.data()), enumerateType<E>());
+            read(static_cast<void*>(dst.data()));
     }
 
     template<element E>

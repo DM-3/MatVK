@@ -14,14 +14,14 @@ namespace matvk
         return _extents.x * _extents.y;
     }
 
-    void MatrixBase::write(void* src, ElemType elemType)
+    void MatrixBase::write(void* src)
     {
-        _sub->write(src, elemType);
+        _sub->write(_extents, _offset, src);
     }
 
-    void MatrixBase::read(void* dst, ElemType elemType)
+    void MatrixBase::read(void* dst)
     {
-        _sub->read(dst, elemType);
+        _sub->read(_extents, _offset, dst);
     }
 
     std::shared_ptr<MatrixBase> MatrixBase::resize(Size2D extents)
