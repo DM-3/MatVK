@@ -1,4 +1,6 @@
 #include "MatVK/vulkanBase.hpp"
+#include <mutex>
+
 
 namespace matvk
 {
@@ -14,7 +16,7 @@ namespace matvk
         else return VKB::getVKB()._physicalDevice;
     }
 
-    const size_t VKB::queueFamilyIndex()
+    const uint32_t VKB::queueFamilyIndex()
     {
         if (_vkb) return _vkb->_queueFamilyIndex;
         else return VKB::getVKB()._queueFamilyIndex;

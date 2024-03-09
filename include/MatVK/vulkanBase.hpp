@@ -1,9 +1,7 @@
 #pragma once
 
-#include <memory>
-#include <mutex>
-
 #include "vulkan/vulkan.hpp"
+#include <memory>
 
 
 namespace matvk
@@ -17,7 +15,7 @@ namespace matvk
 
         static const vk::Instance&       instance();
         static const vk::PhysicalDevice& physicalDevice();
-        static const size_t              queueFamilyIndex();
+        static const uint32_t            queueFamilyIndex();
         static const vk::Device&         device();
         static const vk::Queue&          queue();
         static const vk::CommandPool&    commandPool();
@@ -35,7 +33,7 @@ namespace matvk
 
         vk::Instance        _instance;
         vk::PhysicalDevice  _physicalDevice;
-        size_t              _queueFamilyIndex;
+        uint32_t            _queueFamilyIndex;
         vk::Device          _device;
         vk::Queue           _queue;
         vk::CommandPool     _commandPool;

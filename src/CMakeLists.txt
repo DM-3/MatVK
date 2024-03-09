@@ -19,6 +19,7 @@ target_sources(MatVK PRIVATE
         "dotOperation.cpp"
 
     "vulkanBase.cpp"
+    "buffer.cpp"
 )
 
 target_include_directories(MatVK PRIVATE 
