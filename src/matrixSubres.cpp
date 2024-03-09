@@ -5,8 +5,8 @@
 namespace matvk
 {
 
-    MatrixSubres::MatrixSubres(Size2D extents) :
-        _extents(extents)
+    MatrixSubres::MatrixSubres(ElemType elemType, Size2D extents) :
+        _elemType(elemType), _extents(extents)
     {
         createImage();
         createImageView();
@@ -19,7 +19,7 @@ namespace matvk
         vk::ImageCreateInfo imageCI; imageCI
             .setArrayLayers(1)
             .setExtent(vk::Extent3D(_extents.x, _extents.y, 1))
-            .setFormat(vk::Format::eR32Sfloat)  // TODO: select format based on type
+            .setFormat(formatOfType(_elemType))
             .setImageType(vk::ImageType::e2D)
             .setInitialLayout(vk::ImageLayout::ePreinitialized)
             .setMipLevels(1)
@@ -52,7 +52,7 @@ namespace matvk
 
         vk::ImageViewCreateInfo viewCI; viewCI
             .setComponents(vk::ComponentMapping())
-            .setFormat(vk::Format::eR32Sfloat)
+            .setFormat(formatOfType(_elemType))
             .setImage(_image)
             .setSubresourceRange(subresourceRange)
             .setViewType(vk::ImageViewType::e2D);
@@ -87,5 +87,12 @@ namespace matvk
 
         VKB::endOneTimeCommandBuffer(cmd);
     }
+
+
+    void MatrixSubres::write(void* src, ElemType elemType)
+    {}
+
+    void MatrixSubres::read(void* dst, ElemType elemType)
+    {}
 
 };

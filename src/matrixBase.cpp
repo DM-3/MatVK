@@ -4,9 +4,9 @@
 namespace matvk
 {
 
-    MatrixBase::MatrixBase(Size2D size) : 
+    MatrixBase::MatrixBase(ElemType elemType, Size2D size) : 
         ExpressionBase({}), _extents(size), _offset(Size2D(0, 0)), 
-        _sub(std::make_shared<MatrixSubres>(size)) 
+        _sub(std::make_shared<MatrixSubres>(elemType, size)) 
     {}
 
     size_t MatrixBase::nElems() const
@@ -14,11 +14,15 @@ namespace matvk
         return _extents.x * _extents.y;
     }
 
-    void MatrixBase::write(void* src, size_t elemSize)
-    {}
+    void MatrixBase::write(void* src, ElemType elemType)
+    {
+        _sub->write(src, elemType);
+    }
 
-    void MatrixBase::read(void* dst, size_t elemSize)
-    {}
+    void MatrixBase::read(void* dst, ElemType elemType)
+    {
+        _sub->read(dst, elemType);
+    }
 
     std::shared_ptr<MatrixBase> MatrixBase::resize(Size2D extents)
     {

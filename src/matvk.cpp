@@ -14,6 +14,30 @@ namespace matvk
 
 
 
+//---- types
+
+    template<>
+    ElemType enumerateType<float>() { return ElemType::float_32; }
+
+    template<>
+    ElemType enumerateType<double>() { return ElemType::float_64; }
+
+    template<>
+    ElemType enumerateType<int>() { return ElemType::int_32; }
+
+    size_t sizeofType(ElemType elemType)
+    {
+        switch(elemType) {
+            case ElemType::float_32:    return 4;
+            case ElemType::float_64:    return 8;
+            case ElemType::int_32:      return 4;
+            default: return 0;
+        }
+    }
+
+
+
+
 //---- non-template class definitions
 
     // accessible classes

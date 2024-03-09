@@ -10,9 +10,12 @@ namespace matvk
     class MatrixSubres
     {
     public:
-        MatrixSubres(Size2D extents);
+        MatrixSubres(ElemType elemType, Size2D extents);
+        void write(void* src, ElemType elemType);
+        void read(void* dst, ElemType elemType);
 
     private:
+        ElemType _elemType;
         Size2D _extents;
         vk::Image _image;
         vk::DeviceMemory _memory;

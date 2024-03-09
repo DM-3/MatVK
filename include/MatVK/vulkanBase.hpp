@@ -1,5 +1,6 @@
 #pragma once
 
+#include "matvk.hpp"
 #include "vulkan/vulkan.hpp"
 #include <memory>
 
@@ -49,5 +50,7 @@ namespace matvk
         void createDevice();
         void createCommandPool();
     };
+
+    vk::Format formatOfType(ElemType elemType);
 
 };

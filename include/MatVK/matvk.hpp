@@ -24,7 +24,19 @@ namespace matvk
         std::is_same_v<double,  T> ||
         std::is_same_v<int,     T>;
 
-    
+    enum class ElemType
+    {
+        float_32,
+        float_64,
+        int_32
+    };
+
+    template<element E>
+    ElemType enumerateType();
+
+    size_t sizeofType(ElemType elemType);
+
+
 
 
 //---- class forward declarations
@@ -164,8 +176,8 @@ namespace matvk
     public:
         size_t nElems() const;
 
-        void write(void* src, size_t elemSize);
-        void read(void* dst, size_t elemSize);
+        void write(void* src, ElemType elemType);
+        void read(void* dst, ElemType elemType);
 
         std::shared_ptr<MatrixBase> resize(Size2D extents);
         std::shared_ptr<MatrixBase> offset(Size2D offset);
@@ -175,7 +187,7 @@ namespace matvk
 
     private:
         template<element E> friend class Matrix;
-        MatrixBase(Size2D size);
+        MatrixBase(ElemType elemType, Size2D size);
 
         std::shared_ptr<MatrixSubres> _sub;
         Size2D _extents;
@@ -252,7 +264,7 @@ namespace matvk
 
     template<element E>
     Matrix<E>::Matrix(Size2D size) : Expression<E>(std::static_pointer_cast<ExpressionBase>
-        (std::shared_ptr<MatrixBase>(new MatrixBase(size))))
+        (std::shared_ptr<MatrixBase>(new MatrixBase(enumerateType<E>(), size))))
     {}
 
     template<element E>
@@ -283,7 +295,7 @@ namespace matvk
             src.resize(nElems());
         
         return std::static_pointer_cast<MatrixBase>(this->_base)->
-            write(static_cast<void*>(src.data()), sizeof(E));
+            write(static_cast<void*>(src.data()), enumerateType<E>());
     }
 
     template<element E>
@@ -293,7 +305,7 @@ namespace matvk
             dst.resize(nElems());
     
         return std::static_pointer_cast<MatrixBase>(this->_base)->
-            read(static_cast<void*>(dst.data()), sizeof(E));
+            read(static_cast<void*>(dst.data()), enumerateType<E>());
     }
 
     template<element E>

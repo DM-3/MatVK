@@ -176,4 +176,15 @@ namespace matvk
 	    _commandPool = _device.createCommandPool(commandPoolCI);
     }
 
+
+    vk::Format formatOfType(ElemType elemType)
+    {
+        switch(elemType) {
+            case ElemType::float_32:    return vk::Format::eR32Sfloat;
+            case ElemType::float_64:    return vk::Format::eR64Sfloat;
+            case ElemType::int_32:      return vk::Format::eR32Sint;
+            default: return vk::Format::eUndefined;
+        }
+    }
+
 };
