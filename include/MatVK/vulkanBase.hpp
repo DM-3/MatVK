@@ -2,7 +2,6 @@
 
 #include "matvk.hpp"
 #include "vulkan/vulkan.hpp"
-#include <memory>
 
 
 namespace matvk

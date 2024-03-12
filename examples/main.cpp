@@ -24,7 +24,7 @@ int main()
 		mB           = mA.T() + sA * mB,
 		mC.T()(size) = mD[size](size) * sB
 	};
-    Q.execute(true);
+    //Q.execute(true);
 
     mB >> data;
 

@@ -85,7 +85,10 @@ namespace matvk
 
         queue().submit(submit, fence);
 
-        device().waitForFences(fence, vk::True, std::numeric_limits<uint64_t>::max());
+        vk::Result r = device().waitForFences(fence, vk::True, std::numeric_limits<uint64_t>::max());
+        if (r != vk::Result::eSuccess)
+            throw std::runtime_error("Error when waiting for fence: " + std::to_string(int(r)));
+
         device().freeCommandBuffers(commandPool(), commandBuffer);
     }
 
