@@ -49,6 +49,9 @@ namespace matvk
         void selectQueueFamilyIndex();
         void createDevice();
         void createCommandPool();
+        void querySubgroupSize();
+
+        friend void hardcodeSubgroupSize(uint32_t size);
     };
 
     vk::Format formatOfType(ElemType elemType);

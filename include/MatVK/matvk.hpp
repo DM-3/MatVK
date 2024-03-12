@@ -11,7 +11,8 @@
 
 namespace matvk 
 {
-    void printHello();
+
+    void hardcodeSubgroupSize(uint32_t size);
 
 
 

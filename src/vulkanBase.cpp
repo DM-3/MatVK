@@ -97,6 +97,7 @@ namespace matvk
         selectQueueFamilyIndex();
         createDevice();
         createCommandPool();
+        querySubgroupSize();
     }
 
     std::mutex singleton_mutex;
@@ -174,6 +175,18 @@ namespace matvk
 		    .setQueueFamilyIndex(_queueFamilyIndex);
 
 	    _commandPool = _device.createCommandPool(commandPoolCI);
+    }
+
+    void VKB::querySubgroupSize()
+    {
+        auto p = _physicalDevice.getProperties2
+            <vk::PhysicalDeviceProperties2, vk::PhysicalDeviceSubgroupProperties>({});
+        _subgroupSize = p.get<vk::PhysicalDeviceSubgroupProperties>().subgroupSize;
+    }
+
+    void hardcodeSubgroupSize(uint32_t size)
+    {
+        VKB::getVKB()._subgroupSize = size;
     }
 
 

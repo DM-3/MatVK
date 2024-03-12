@@ -7,12 +7,6 @@
 
 namespace matvk
 {
-    void printHello() {
-        std::cout << "Hello MatVK" << std::endl;
-    }
-
-
-
 
 //---- types
 

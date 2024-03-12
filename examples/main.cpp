@@ -6,7 +6,7 @@ int main()
 {
     using namespace matvk;
 
-    printHello();
+    //hardcodeSubgroupSize(16);
 
     Size2D size(8, 8);
 
@@ -24,9 +24,7 @@ int main()
 		mB           = mA.T() + sA * mB,
 		mC.T()(size) = mD[size](size) * sB
 	};
-    Q.endRecording();
-    Q.execute();
-    Q.waitFinished();
+    Q.execute(true);
 
     mB >> data;
 
