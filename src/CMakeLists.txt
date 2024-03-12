@@ -7,6 +7,8 @@ target_sources(MatVK PRIVATE
     "matvk.cpp"
 
     "queue.cpp"
+        "queueBase.cpp"
+        
     "assignment.cpp"
     
     "expressionBase.cpp"

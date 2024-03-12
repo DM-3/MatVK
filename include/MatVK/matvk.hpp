@@ -129,13 +129,15 @@ namespace matvk
     public:
         Queue();
         Queue(std::initializer_list<Assignment> assignments);
-        Queue& operator<<(Assignment assignment);
         Queue& operator<<(std::initializer_list<Assignment> assignments);
+        Queue& operator<<(Assignment assignment);
+        bool isRecording();
         void endRecording();
         void execute(bool immediateWait = true);
         void waitFinished();
 
     private:
+        bool _recording;
         std::shared_ptr<QueueBase> _base;
     };
 
