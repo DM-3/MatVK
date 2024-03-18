@@ -13,6 +13,7 @@ namespace matvk
         MatrixSubres(ElemType elemType, Size2D extents);
         void write(Size2D extents, Size2D offset, void* src);
         void read(Size2D extents, Size2D offset, void* dst);
+        ElemType type();
 
     private:
         ElemType _elemType;

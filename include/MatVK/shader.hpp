@@ -33,6 +33,7 @@ namespace matvk
             Size2D extents, Size2D offset, bool transposed);
         void addInputMatrix(std::shared_ptr<MatrixSubres> matrix,
             Size2D extents, Size2D offset, bool transposed);
+        std::string matrixAccessPos(Size2D extents, Size2D offset, bool transposed);
     };
 
 };

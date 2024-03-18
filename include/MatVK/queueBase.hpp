@@ -18,10 +18,15 @@ namespace matvk
         void execute();
         void waitFinished();
 
+        std::vector<std::shared_ptr<MatrixSubres>>& matrices();
+        std::vector<std::shared_ptr<ScalarSubres>>& scalars();
+
     private:
         std::vector<Shader>     _shaders;
-        std::unique_ptr<Buffer> _uniformBuffer;
+        std::vector<std::shared_ptr<MatrixSubres>> _matrices;
+        std::vector<std::shared_ptr<ScalarSubres>> _scalars;
 
+        std::unique_ptr<Buffer> _uniformBuffer;
         vk::CommandBuffer       _commandBuffer;
         vk::DescriptorSetLayout _descriptorSetLayout;
         vk::DescriptorPool      _descriptorPool;

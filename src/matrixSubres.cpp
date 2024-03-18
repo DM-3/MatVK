@@ -122,4 +122,9 @@ namespace matvk
         memcpy(dst, buffer, buffer.size());
     }
 
+    ElemType MatrixSubres::type()
+    {
+        return _elemType;
+    }
+
 };

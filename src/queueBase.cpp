@@ -81,4 +81,14 @@ namespace matvk
     void QueueBase::updateUniformBuffer()
     {}
 
+    std::vector<std::shared_ptr<MatrixSubres>>& QueueBase::matrices()
+    {
+        return _matrices;
+    }
+
+    std::vector<std::shared_ptr<ScalarSubres>>& QueueBase::scalars()
+    {
+        return _scalars;
+    }
+
 };

@@ -55,4 +55,8 @@ namespace matvk
 
     vk::Format formatOfType(ElemType elemType);
 
+    const char* qualifierOfType(ElemType elemType, bool componentsOnly = false);
+
+    const char* nameOfType(ElemType elemType);
+
 };

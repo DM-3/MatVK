@@ -1,5 +1,6 @@
 #include "MatVK/matvk.hpp"
 #include "MatVK/matrixSubres.hpp"
+#include "MatVK/shader.hpp"
 
 namespace matvk
 {
@@ -48,6 +49,8 @@ namespace matvk
     }
 
     void MatrixBase::record(Shader& shader) const 
-    {}
+    {
+        shader.addMatrix(_sub, _extents, _offset, _transpose);
+    }
 
 };

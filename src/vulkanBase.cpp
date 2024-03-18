@@ -203,4 +203,34 @@ namespace matvk
         }
     }
 
+    const char* qualifierOfType(ElemType elemType, bool componentsOnly)
+    {
+        if (componentsOnly) {
+            switch(elemType) {
+                case ElemType::float_32:
+                case ElemType::float_64:
+                case ElemType::int_32:
+                    return "r";
+                default: return "";
+            }
+        }
+
+        switch(elemType) {
+            case ElemType::float_32:    return "r32f";
+            case ElemType::float_64:    return "r64f";
+            case ElemType::int_32:      return "r32i";
+            default: return "";
+        }
+    }
+
+    const char* nameOfType(ElemType elemType)
+    {
+        switch(elemType) {
+            case ElemType::float_32:    return "float";
+            case ElemType::float_64:    return "double";
+            case ElemType::int_32:      return "int";
+            default: return "";
+        }
+    }
+
 };
