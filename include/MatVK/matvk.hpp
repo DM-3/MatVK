@@ -4,6 +4,7 @@
 #include <concepts>
 #include <memory>
 #include <vector>
+#include <string>
 #include <initializer_list>
 #include <inttypes.h>
 #include <limits>
@@ -72,6 +73,7 @@ namespace matvk
     // hidden classes
 
     class MatrixSubres;
+    class Shader;
 
 
 
@@ -150,7 +152,7 @@ namespace matvk
     {
     public:
         ExpressionBase(std::vector<std::shared_ptr<ExpressionBase>> operands);
-        virtual void record() = 0;
+        virtual void record(Shader& shader) const = 0;
     
     protected:
         std::vector<std::shared_ptr<ExpressionBase>> _operands;
@@ -187,7 +189,7 @@ namespace matvk
         std::shared_ptr<MatrixBase> offset(Size2D offset);
         std::shared_ptr<MatrixBase> transpose();
 
-        void record();
+        void record(Shader& shader) const;
 
     private:
         template<element E> friend class Matrix;
@@ -202,7 +204,7 @@ namespace matvk
     class ScalarBase : public ExpressionBase
     {
     public:
-        void record();
+        void record(Shader& shader) const;
 
     private:
         template<element E> friend class Scalar;
@@ -212,7 +214,7 @@ namespace matvk
     class ConstantBase : public ExpressionBase
     {
     public:
-        void record();
+        void record(Shader& shader) const;
 
     private:
         template<element E> friend class Constant;
@@ -225,7 +227,7 @@ namespace matvk
     public:
         InfixOperation(std::shared_ptr<ExpressionBase> left, 
             std::shared_ptr<ExpressionBase> right, char opSymbol);
-        void record();
+        void record(Shader& shader) const;
 
     private:
         char _opSymbol;
@@ -235,7 +237,7 @@ namespace matvk
     {
     public:
         PrefixOperation(std::vector<std::shared_ptr<ExpressionBase>> operands, std::string name);
-        void record();
+        void record(Shader& shader) const;
 
     private:
         std::string _name;
@@ -245,12 +247,16 @@ namespace matvk
     {
     public:
         DotOperation(std::shared_ptr<ExpressionBase> left, std::shared_ptr<ExpressionBase> right);
-        void record();
+        void record(Shader& shader) const;
     };
 
 
     class Assignment
     {
+    public:
+        const std::shared_ptr<ExpressionBase> getDestination();
+        const std::shared_ptr<ExpressionBase> getSource();
+
     private:
         template<element E> friend class Matrix;
         Assignment(std::shared_ptr<ExpressionBase> src, std::shared_ptr<ExpressionBase> dst);

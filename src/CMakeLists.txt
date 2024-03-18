@@ -10,6 +10,7 @@ target_sources(MatVK PRIVATE
         "queueBase.cpp"
         
     "assignment.cpp"
+    "shader.cpp"
     
     "expressionBase.cpp"
         "matrixBase.cpp"

@@ -47,7 +47,7 @@ namespace matvk
         return newMat;
     }
 
-    void MatrixBase::record() 
+    void MatrixBase::record(Shader& shader) const 
     {}
 
 };

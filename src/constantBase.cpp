@@ -5,6 +5,6 @@ namespace matvk
 
     ConstantBase::ConstantBase() : ExpressionBase({}) {}
 
-    void ConstantBase::record() {}
+    void ConstantBase::record(Shader& shader) const {}
 
 };

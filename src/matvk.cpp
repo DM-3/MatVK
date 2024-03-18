@@ -50,4 +50,17 @@ namespace matvk
         return { x - other.x, y - other.y };
     }
 
+
+    // inaccessible classes
+
+    const std::shared_ptr<ExpressionBase> Assignment::getDestination()
+    {
+        return _dst;
+    }
+
+    const std::shared_ptr<ExpressionBase> Assignment::getSource()
+    {
+        return _src;
+    }
+
 };

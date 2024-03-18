@@ -8,6 +8,6 @@ namespace matvk
         ExpressionBase(operands), _name(name) 
     {}
 
-    void PrefixOperation::record() {}
+    void PrefixOperation::record(Shader& shader) const {}
     
 };

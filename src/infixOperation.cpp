@@ -8,6 +8,6 @@ namespace matvk
         ExpressionBase({ left, right }), _opSymbol(opSymbol) 
     {}
 
-    void InfixOperation::record() {}
+    void InfixOperation::record(Shader& shader) const {}
 
 };

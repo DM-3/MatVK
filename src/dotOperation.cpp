@@ -8,6 +8,6 @@ namespace matvk
         ExpressionBase({ left, right }) 
     {}
 
-    void DotOperation::record() {}
+    void DotOperation::record(Shader& shader) const {}
 
 };

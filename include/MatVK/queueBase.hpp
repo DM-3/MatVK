@@ -2,6 +2,7 @@
 
 #include "matvk.hpp"
 #include "buffer.hpp"
+#include "shader.hpp"
 
 
 namespace matvk
@@ -18,7 +19,7 @@ namespace matvk
         void waitFinished();
 
     private:
-        std::vector<Assignment> _assignments;
+        std::vector<Shader>     _shaders;
         std::unique_ptr<Buffer> _uniformBuffer;
 
         vk::CommandBuffer       _commandBuffer;

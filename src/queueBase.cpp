@@ -24,7 +24,13 @@ namespace matvk
     }
 
     void QueueBase::addAssignment(Assignment assignment) 
-    {}
+    {
+        _shaders.push_back(
+            Shader(*this, std::static_pointer_cast<MatrixBase>
+            (assignment.getDestination()))
+        );
+        assignment.getSource()->record(_shaders.back());
+    }
 
     void QueueBase::compile() 
     {

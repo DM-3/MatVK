@@ -3,8 +3,10 @@
 namespace matvk
 {
 
-    ScalarBase::ScalarBase() : ExpressionBase({}) {}
+    ScalarBase::ScalarBase() : ExpressionBase({}) 
+    {}
 
-    void ScalarBase::record() {}
+    void ScalarBase::record(Shader& shader) const 
+    {}
     
 };
