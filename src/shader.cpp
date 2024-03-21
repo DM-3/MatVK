@@ -1,6 +1,8 @@
 #include "MatVK/shader.hpp"
 #include "MatVK/queueBase.hpp"
+#include "MatVK/scalarSubres.hpp"
 #include "MatVK/matrixSubres.hpp"
+#include <iostream>
 
 
 namespace matvk
@@ -10,13 +12,36 @@ namespace matvk
         _queueBase(queueBase), _outputSize({0, 0})
     {
         dst->record(*this);
+
+        int index = 0;
+        for (auto scalar : queueBase.scalars())
+            _scalars.append(std::string(nameOfType(scalar->type()))
+                + " scalar_" + std::to_string(index++) + ";\n");
     }
 
     void Shader::appendOutput(std::string seq) 
-    {}
+    {
+        _output.append(seq);
+    }
+
+    void Shader::appendOutput(char c)
+    {
+        _output += c;
+    }
 
     void Shader::addScalar(std::shared_ptr<ScalarSubres> scalar)
-    {}
+    {
+        int index = std::find(_queueBase.scalars().begin(), _queueBase.scalars().end(),
+                    scalar) - _queueBase.scalars().begin();
+        if (index == _queueBase.scalars().size())
+        {
+            _queueBase.scalars().push_back(scalar);
+            _scalars.append(std::string(nameOfType(scalar->type()))
+                + " scalar_" + std::to_string(index) + ";\n");
+        }
+
+        _output.append("ubo.scalar_" + std::to_string(index));
+    }
 
     void Shader::addMatrix(std::shared_ptr<MatrixSubres> matrix, 
         Size2D extents, Size2D offset, bool transposed)
@@ -29,7 +54,44 @@ namespace matvk
 
     std::string Shader::assemble()
     {
-        return std::string();
+        std::string str =
+            "#version 460\n"
+            "#extension GL_KHR_shader_subgroup_shuffle : enable\n"
+            "\n"            
+            "#define SUB_SIZE " + std::to_string(VKB::subgroupSize()) + "\n"
+            "\n"
+            "layout(local_size_x = SUB_SIZE) in;\n"
+            "\n"
+            "layout(binding = 0) buffer ScalarBuffer\n"
+            "{\n"
+            + _scalars +
+            "} ubo;\n"
+            "\n"
+            + _images +
+            "\n"
+            "void main()\n"
+            "{\n"
+            "    ivec2 outputCoord = ivec2(gl_WorkGroupID.xy) * SUB_SIZE;\n"
+            "\n"
+            + _multiplications + 
+            "\n"
+            "    outputCoord.x += int(gl_SubgroupInvocationID);\n"
+            "    if (outputCoord.x >= " + std::to_string(_outputSize.x) + ")\n"
+            "        return;\n"
+            "\n"
+            "    for(int i = 0; outputCoord.y < " + std::to_string(_outputSize.y) +
+            " && i < SUB_SIZE; i++, outputCoord.y++) \n"
+            "    {\n"
+            + _loads +
+            "\n"
+            + _output +
+            "\n        ));\n"
+            "    }\n"
+            "}\n";
+
+        std::cout << str << std::endl;
+
+        return str;
     }
 
     void Shader::addOutputMatrix(std::shared_ptr<MatrixSubres> matrix, 
@@ -51,12 +113,12 @@ namespace matvk
 
         // record image binding
         _images.append("layout (set = 0, binding = " + std::to_string(bindIndex)
-            + ", " + qualifierOfType(matrix->type()) + ") uniform image2D"
+            + ", " + qualifierOfType(matrix->type()) + ") uniform image2D "
             + matName + ";\n");
 
 
         // record output
-        _output.append("imageStore(" + matName + ", " + matrixAccessPos(
+        _output.append("\timageStore(" + matName + ", " + matrixAccessPos(
             extents, offset, transposed) + ", vec4(\n");
     }
 
@@ -75,7 +137,7 @@ namespace matvk
         // record image binding
         if (_images.find(matName) == std::string::npos)
             _images.append("layout (set = 0, binding = " + std::to_string(bindIndex)
-                + ", " + qualifierOfType(matrix->type()) + ") uniform readonly image2D"
+                + ", " + qualifierOfType(matrix->type()) + ") uniform readonly image2D "
                 + matName + ";\n");
 
 
@@ -85,8 +147,8 @@ namespace matvk
             + std::to_string(offset.y) + "_" + std::to_string(transposed);
         
         if (_loads.find(loadName) == std::string::npos)
-            _loads.append(std::string(nameOfType(matrix->type())) + " "
-                + loadName + " = imageLoad(" + matName + ", " 
+            _loads.append("\t" + std::string(nameOfType(matrix->type())) 
+                + " " + loadName + " = imageLoad(" + matName + ", " 
                 + matrixAccessPos(extents, offset, transposed) + ")."
                 + qualifierOfType(matrix->type(), true) + ";\n");
 

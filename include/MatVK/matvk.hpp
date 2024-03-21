@@ -73,6 +73,7 @@ namespace matvk
     // hidden classes
 
     class MatrixSubres;
+    class ScalarSubres;
     class Shader;
 
 
@@ -209,7 +210,9 @@ namespace matvk
 
     private:
         template<element E> friend class Scalar;
-        ScalarBase();
+        ScalarBase(ElemType elemType);
+
+        std::shared_ptr<ScalarSubres> _sub;
     };
 
     class ConstantBase : public ExpressionBase
@@ -352,7 +355,7 @@ namespace matvk
 
     template<element E>
     Scalar<E>::Scalar() : Expression<E>(std::static_pointer_cast<ExpressionBase>
-        (std::shared_ptr<ScalarBase>(new ScalarBase())))
+        (std::shared_ptr<ScalarBase>(new ScalarBase(enumerateType<E>()))))
     {}
 
 

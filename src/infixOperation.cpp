@@ -1,4 +1,6 @@
 #include "MatVK/matvk.hpp"
+#include "MatVK/shader.hpp"
+
 
 namespace matvk
 {
@@ -8,6 +10,13 @@ namespace matvk
         ExpressionBase({ left, right }), _opSymbol(opSymbol) 
     {}
 
-    void InfixOperation::record(Shader& shader) const {}
+    void InfixOperation::record(Shader& shader) const 
+    {
+        shader.appendOutput("(");
+        _operands[0]->record(shader);
+        shader.appendOutput(std::string(" ") + _opSymbol + " ");
+        _operands[1]->record(shader);
+        shader.appendOutput(")");
+    }
 
 };

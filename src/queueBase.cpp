@@ -30,6 +30,7 @@ namespace matvk
             (assignment.getDestination()))
         );
         assignment.getSource()->record(_shaders.back());
+        _shaders.back().assemble();
     }
 
     void QueueBase::compile() 

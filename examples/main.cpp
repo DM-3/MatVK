@@ -21,8 +21,8 @@ int main()
     mB << data;
 
 	Queue Q = {
-		mB           = mA.T() + sA * mB,
-		mC.T()(size) = mD[size](size) * sB
+		mB(6, 6) = mA.T() + sA * mB,
+		mC.T()   = mD[size](size) * sB
 	};
     //Q.execute(true);
 

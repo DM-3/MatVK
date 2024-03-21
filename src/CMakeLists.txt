@@ -16,6 +16,7 @@ target_sources(MatVK PRIVATE
         "matrixBase.cpp"
             "matrixSubres.cpp"
         "scalarBase.cpp"
+            "scalarSubres.cpp"
         "constantBase.cpp"
         "infixOperation.cpp"
         "prefixOperation.cpp"

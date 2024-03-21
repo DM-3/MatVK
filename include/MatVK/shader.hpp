@@ -14,6 +14,7 @@ namespace matvk
         Shader(QueueBase& queue, const std::shared_ptr<MatrixBase> dst);
 
         void appendOutput(std::string seq);
+        void appendOutput(char c);
         void addScalar(std::shared_ptr<ScalarSubres> scalar);
         void addMatrix(std::shared_ptr<MatrixSubres> matrix,
             Size2D extents, Size2D offset, bool transposed);
