@@ -87,7 +87,8 @@ namespace matvk
         Size2D(uint32_t width, uint32_t height);
         Size2D operator+(const Size2D other);
         Size2D operator-(const Size2D other);
-        
+        Size2D yx();
+
         uint32_t x;
         uint32_t y;
     };

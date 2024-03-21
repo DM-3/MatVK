@@ -50,6 +50,11 @@ namespace matvk
         return { x - other.x, y - other.y };
     }
 
+    Size2D Size2D::yx()
+    {
+        return Size2D(y, x);
+    }
+
 
     // inaccessible classes
 

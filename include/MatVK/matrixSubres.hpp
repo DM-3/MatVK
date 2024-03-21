@@ -14,6 +14,7 @@ namespace matvk
         void write(Size2D extents, Size2D offset, void* src);
         void read(Size2D extents, Size2D offset, void* dst);
         ElemType type();
+        Size2D extents();
 
     private:
         ElemType _elemType;

@@ -127,4 +127,9 @@ namespace matvk
         return _elemType;
     }
 
+    Size2D MatrixSubres::extents()
+    {
+        return Size2D(_extents);
+    }
+
 };

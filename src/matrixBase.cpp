@@ -42,8 +42,8 @@ namespace matvk
     std::shared_ptr<MatrixBase> MatrixBase::transpose()
     {
         auto newMat = std::make_shared<MatrixBase>(*this);
-        newMat->_extents = Size2D(_extents.y, _extents.x);
-        newMat->_offset = Size2D(_offset.y, _offset.x);
+        newMat->_extents    = _extents.yx();
+        newMat->_offset     = _offset.yx();
         newMat->_transpose ^= 1;
         return newMat;
     }

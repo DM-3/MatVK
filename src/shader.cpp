@@ -35,8 +35,10 @@ namespace matvk
     void Shader::addOutputMatrix(std::shared_ptr<MatrixSubres> matrix, 
         Size2D extents, Size2D offset, bool transposed)
     {
-        _outputSize = extents;
-
+        Size2D sExt = (transposed ? matrix->extents().yx() : matrix->extents()) - offset;
+        _outputSize.x = sExt.x < extents.x ? sExt.x : extents.x;
+        _outputSize.y = sExt.y < extents.y ? sExt.y : extents.y;
+        
 
         // find matrix' binding index in the queue the shader is used in
         int bindIndex = std::find(_queueBase.matrices().begin(), _queueBase.matrices().end(),
@@ -95,7 +97,21 @@ namespace matvk
 
     std::string Shader::matrixAccessPos(Size2D extents, Size2D offset, bool transposed)
     {
-        return "vec2()";
+        std::string str("(outputCoord");
+
+        if (extents.x < _outputSize.x || extents.y < _outputSize.y)
+            str += " \% ivec2("
+                + std::to_string(extents.x) + ", "
+                + std::to_string(extents.y) + ")";
+
+        if (offset.x > 0 || offset.y > 0)
+            str += " + ivec2(" 
+                + std::to_string(offset.x) + ", "
+                + std::to_string(offset.y) + ")";
+
+        str.append(transposed ? ").yx" : ")");
+
+        return str;
     }
 
 };
