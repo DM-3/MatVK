@@ -2,6 +2,9 @@
 #include <iostream>
 
 
+template <typename T>
+void printMat(std::vector<T> data, uint32_t cols, uint32_t rows);
+
 int main() 
 {
     using namespace matvk;
@@ -27,6 +30,30 @@ int main()
     //Q.execute(true);
 
     mB >> data;
+    printMat(data, size.x, size.y);
 
     return 0;
+}
+
+template <typename T>
+void printMat(std::vector<T> data, uint32_t cols, uint32_t rows)
+{
+    std::cout.precision(3);
+    std::cout << "\n" << std::fixed;
+
+    for (uint32_t m = 0; m < rows; m++)
+    {
+        std::cout << "[ ";
+        for (uint32_t n = 0; n < cols; n++)
+        {
+            if (data[cols * m + n] != 0)
+                std::cout << data[cols * m + n];
+            else
+                std::cout << "0";
+            std::cout << "\t";
+        }
+        std::cout << "]\n";
+    }
+
+    std::cout << std::endl;
 }
