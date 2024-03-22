@@ -1,4 +1,7 @@
 #include "MatVK/queueBase.hpp"
+#include <fstream>
+#include <filesystem>
+#include <iostream>
 
 
 namespace matvk
@@ -13,14 +16,14 @@ namespace matvk
     {
         VKB::device().destroyFence(_fence);
 
-        if (!_uniformBuffer) return;
+        if (!_scalarBuffer) return;
 
         VKB::device().destroyPipelineLayout(_pipelineLayout);     
         VKB::device().freeDescriptorSets(_descriptorPool, _descriptorSet);
         VKB::device().destroyDescriptorPool(_descriptorPool);
         VKB::device().destroyDescriptorSetLayout(_descriptorSetLayout);
         VKB::device().freeCommandBuffers(VKB::commandPool(), _commandBuffer);
-        _uniformBuffer.reset();        
+        _scalarBuffer.reset();        
     }
 
     void QueueBase::addAssignment(Assignment assignment) 
@@ -30,12 +33,11 @@ namespace matvk
             (assignment.getDestination()))
         );
         assignment.getSource()->record(_shaders.back());
-        _shaders.back().assemble();
     }
 
     void QueueBase::compile() 
     {
-        createUniformBuffer();
+        createScalarBuffer();
         createDescriptorSetLayout();
         createDescriptorPool();
         createDescriptorSet();
@@ -61,11 +63,32 @@ namespace matvk
             throw std::runtime_error("Error when waiting for fence: " + std::to_string(int(r)));
     }
 
-    void QueueBase::createUniformBuffer()
+    void QueueBase::createScalarBuffer()
     {}
 
     void QueueBase::createDescriptorSetLayout()
-    {}
+    {
+        std::vector<vk::DescriptorSetLayoutBinding> bindings(_matrices.size() + 1);
+        bindings[0]
+            .setBinding(0)
+            .setDescriptorCount(1)
+            .setDescriptorType(vk::DescriptorType::eStorageBuffer)
+            .setStageFlags(vk::ShaderStageFlagBits::eCompute);
+
+        for (int i = 1; i < bindings.size(); i++) {
+            bindings[i]
+                .setBinding(i)
+                .setDescriptorCount(1)
+                .setDescriptorType(vk::DescriptorType::eStorageImage)
+                .setStageFlags(vk::ShaderStageFlagBits::eCompute);
+        }
+        
+        vk::DescriptorSetLayoutCreateInfo layoutCI; layoutCI
+            .setBindingCount(bindings.size())
+            .setBindings(bindings);
+
+        _descriptorSetLayout = VKB::device().createDescriptorSetLayout(layoutCI);
+    }
 
     void QueueBase::createDescriptorPool()
     {}
@@ -74,7 +97,40 @@ namespace matvk
     {}
 
     void QueueBase::createPipelines()
-    {}
+    {
+        vk::PipelineLayoutCreateInfo layoutCI; layoutCI
+            .setSetLayoutCount(1)
+            .setSetLayouts(_descriptorSetLayout);
+
+        _pipelineLayout = VKB::device().createPipelineLayout(layoutCI);
+
+        std::vector<vk::ShaderModule> modules;
+        std::vector<vk::ComputePipelineCreateInfo> pipelineCIs;
+        
+        for (auto& shader : _shaders)
+        {
+            std::string code = shader.compile();
+            vk::ShaderModuleCreateInfo moduleCI; moduleCI
+                .setCodeSize(code.size())
+                .setPCode((const uint32_t*)code.c_str());
+
+            modules.push_back(VKB::device().createShaderModule(moduleCI));
+
+            vk::PipelineShaderStageCreateInfo stageCI; stageCI
+                .setModule(modules.back())
+                .setPName("main")
+                .setStage(vk::ShaderStageFlagBits::eCompute);
+
+            vk::ComputePipelineCreateInfo pipelineCI; pipelineCI
+                .setLayout(_pipelineLayout)
+                .setStage(stageCI);
+
+            pipelineCIs.push_back(pipelineCI);
+        }
+
+        _pipelines = VKB::device().createComputePipelines(
+            vk::PipelineCache(), pipelineCIs).value;
+    }
 
     void QueueBase::createCommandBuffer()
     {}

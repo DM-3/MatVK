@@ -19,7 +19,7 @@ namespace matvk
         void addMatrix(std::shared_ptr<MatrixSubres> matrix,
             Size2D extents, Size2D offset, bool transposed);
 
-        std::string assemble();
+        std::string compile();
 
     private:
         QueueBase& _queueBase;

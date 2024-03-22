@@ -2,7 +2,10 @@
 #include "MatVK/queueBase.hpp"
 #include "MatVK/scalarSubres.hpp"
 #include "MatVK/matrixSubres.hpp"
-#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <stdio.h>
+#include <filesystem>
 
 
 namespace matvk
@@ -52,7 +55,7 @@ namespace matvk
             addInputMatrix(matrix, extents, offset, transposed);
     }
 
-    std::string Shader::assemble()
+    std::string Shader::compile()
     {
         std::string str =
             "#version 460\n"
@@ -89,9 +92,26 @@ namespace matvk
             "    }\n"
             "}\n";
 
-        std::cout << str << std::endl;
 
-        return str;
+        std::string name = "shader" + std::to_string(uint64_t(this) % 65536);
+        
+        std::ofstream compFile(name + ".comp");
+        compFile << str;
+        compFile.close();
+
+        system(("glslangValidator --target-env vulkan1.3 " 
+            + name + ".comp -o " + name + ".spv").c_str());
+
+        std::filesystem::remove(name + ".comp");
+
+        std::ifstream spvFile(name + ".spv");
+        std::stringstream buffer;
+        buffer << spvFile.rdbuf();
+        spvFile.close();
+
+        std::filesystem::remove(name + ".spv");
+
+        return buffer.str();
     }
 
     void Shader::addOutputMatrix(std::shared_ptr<MatrixSubres> matrix, 
@@ -113,13 +133,15 @@ namespace matvk
 
         // record image binding
         _images.append("layout (set = 0, binding = " + std::to_string(bindIndex)
-            + ", " + qualifierOfType(matrix->type()) + ") uniform image2D "
+            + ", " + qualifierOfType(matrix->type()) + ") uniform "
+            + nameOfType(matrix->type(), true) + "image2D "
             + matName + ";\n");
 
 
         // record output
-        _output.append("\timageStore(" + matName + ", " + matrixAccessPos(
-            extents, offset, transposed) + ", vec4(\n");
+        _output.append("\timageStore(" + matName + ", " 
+            + matrixAccessPos(extents, offset, transposed) + ", " 
+            + nameOfType(matrix->type(), true) + "vec4(\n");
     }
 
     void Shader::addInputMatrix(std::shared_ptr<MatrixSubres> matrix, 
@@ -137,7 +159,8 @@ namespace matvk
         // record image binding
         if (_images.find(matName) == std::string::npos)
             _images.append("layout (set = 0, binding = " + std::to_string(bindIndex)
-                + ", " + qualifierOfType(matrix->type()) + ") uniform readonly image2D "
+                + ", " + qualifierOfType(matrix->type()) + ") uniform readonly "
+                + nameOfType(matrix->type(), true) + "image2D "
                 + matName + ";\n");
 
 

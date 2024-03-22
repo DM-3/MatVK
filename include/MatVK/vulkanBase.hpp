@@ -57,6 +57,6 @@ namespace matvk
 
     const char* qualifierOfType(ElemType elemType, bool componentsOnly = false);
 
-    const char* nameOfType(ElemType elemType);
+    const char* nameOfType(ElemType elemType, bool singleCharOnly = false);
 
 };

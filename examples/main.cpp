@@ -27,7 +27,7 @@ int main()
 		mB(6, 6) = mA.T() + sA * mB,
 		mC.T()   = mD[size](size) * sB
 	};
-    //Q.execute(true);
+    Q.execute(true);
 
     mB >> data;
     printMat(data, size.x, size.y);

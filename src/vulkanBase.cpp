@@ -223,8 +223,15 @@ namespace matvk
         }
     }
 
-    const char* nameOfType(ElemType elemType)
+    const char* nameOfType(ElemType elemType, bool singleCharOnly)
     {
+        if (singleCharOnly) {
+            switch(elemType) {
+                case ElemType::int_32:  return "i";
+                default: return "";
+            }
+        }
+        
         switch(elemType) {
             case ElemType::float_32:    return "float";
             case ElemType::float_64:    return "double";

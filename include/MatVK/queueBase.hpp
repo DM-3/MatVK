@@ -22,19 +22,20 @@ namespace matvk
         std::vector<std::shared_ptr<ScalarSubres>>& scalars();
 
     private:
-        std::vector<Shader>     _shaders;
+        std::vector<Shader>         _shaders;
         std::vector<std::shared_ptr<MatrixSubres>> _matrices;
         std::vector<std::shared_ptr<ScalarSubres>> _scalars;
 
-        std::unique_ptr<Buffer> _uniformBuffer;
-        vk::CommandBuffer       _commandBuffer;
-        vk::DescriptorSetLayout _descriptorSetLayout;
-        vk::DescriptorPool      _descriptorPool;
-        vk::DescriptorSet       _descriptorSet;
-        vk::PipelineLayout      _pipelineLayout;
-        vk::Fence               _fence;
+        std::unique_ptr<Buffer>     _scalarBuffer;
+        vk::CommandBuffer           _commandBuffer;
+        vk::DescriptorSetLayout     _descriptorSetLayout;
+        vk::DescriptorPool          _descriptorPool;
+        vk::DescriptorSet           _descriptorSet;
+        vk::PipelineLayout          _pipelineLayout;
+        std::vector<vk::Pipeline>   _pipelines;
+        vk::Fence                   _fence;
 
-        void createUniformBuffer();
+        void createScalarBuffer();
         void createDescriptorSetLayout();
         void createDescriptorPool();
         void createDescriptorSet();
