@@ -45,6 +45,31 @@ namespace matvk
         return _buffer;
     }
 
+    vk::DescriptorBufferInfo Buffer::getDescriptorInfo(uint64_t offset, uint64_t range)
+    {
+        vk::DescriptorBufferInfo info; info
+            .setBuffer(_buffer)
+            .setOffset(offset)
+            .setRange(range);
+
+        return info;
+    }
+
+    vk::WriteDescriptorSet Buffer::getDescriptorWrite(vk::DescriptorSet set, 
+        uint32_t binding, vk::DescriptorBufferInfo& info)
+    {
+        vk::WriteDescriptorSet write; write
+            .setDstSet(set)
+            .setDstBinding(binding)
+            .setDescriptorCount(1)
+            .setDescriptorType(vk::DescriptorType::eStorageBuffer)
+            .setDstArrayElement(0)
+            .setBufferInfo(info);
+
+        return write;
+    }
+
+
     StagingBuffer::StagingBuffer(size_t size) :
         Buffer(size, 
             vk::BufferUsageFlagBits::eTransferSrc |

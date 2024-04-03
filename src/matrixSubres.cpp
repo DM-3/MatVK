@@ -132,4 +132,27 @@ namespace matvk
         return Size2D(_extents);
     }
 
+    vk::DescriptorImageInfo MatrixSubres::getDescriptorInfo()
+    {
+        vk::DescriptorImageInfo info; info
+            .setImageLayout(vk::ImageLayout::eGeneral)
+            .setImageView(_imageView);
+
+        return info;
+    }
+
+    vk::WriteDescriptorSet MatrixSubres::getDescriptorWrite(vk::DescriptorSet set, 
+        uint32_t binding, vk::DescriptorImageInfo& info)
+    {
+        vk::WriteDescriptorSet write; write
+            .setDstSet(set)
+            .setDstBinding(binding)
+            .setDescriptorCount(1)
+            .setDescriptorType(vk::DescriptorType::eStorageImage)
+            .setDstArrayElement(0)
+            .setImageInfo(info);
+
+        return write;
+    }
+
 };

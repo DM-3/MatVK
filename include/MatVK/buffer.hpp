@@ -14,6 +14,9 @@ namespace matvk
         ~Buffer();
         const size_t size();
         const vk::Buffer& buffer();
+        vk::DescriptorBufferInfo getDescriptorInfo(uint64_t offset = 0, uint64_t range = vk::WholeSize);
+        vk::WriteDescriptorSet getDescriptorWrite(vk::DescriptorSet set, 
+            uint32_t binding, vk::DescriptorBufferInfo& info);
 
     protected:
         size_t _size;

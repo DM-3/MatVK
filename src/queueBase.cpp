@@ -116,7 +116,30 @@ namespace matvk
     }
 
     void QueueBase::createDescriptorSet()
-    {}
+    {
+        // allocate descriptor set
+        vk::DescriptorSetAllocateInfo setAI; setAI
+            .setDescriptorPool(_descriptorPool)
+            .setDescriptorSetCount(1)
+            .setSetLayouts(_descriptorSetLayout);
+
+        _descriptorSet = VKB::device().allocateDescriptorSets(setAI).front();
+
+        // prepare buffer write        
+        vk::DescriptorBufferInfo bufferInfo = _scalarBuffer->getDescriptorInfo();
+        std::vector<vk::WriteDescriptorSet> writes = 
+            { _scalarBuffer->getDescriptorWrite(_descriptorSet, 0, bufferInfo) };
+        
+        // prepare image writes
+        std::vector<vk::DescriptorImageInfo> imageInfos(_matrices.size());
+        for (int i = 0; i < _matrices.size(); i++)
+        {
+            imageInfos[i] = _matrices[i]->getDescriptorInfo();
+            writes.push_back(_matrices[i]->getDescriptorWrite(_descriptorSet, i+1, imageInfos[i]));
+        }
+
+        VKB::device().updateDescriptorSets(writes, {});
+    }
 
     void QueueBase::createPipelines()
     {

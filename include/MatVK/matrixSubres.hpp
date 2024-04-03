@@ -15,6 +15,9 @@ namespace matvk
         void read(Size2D extents, Size2D offset, void* dst);
         ElemType type();
         Size2D extents();
+        vk::DescriptorImageInfo getDescriptorInfo();
+        vk::WriteDescriptorSet getDescriptorWrite(vk::DescriptorSet set, 
+            uint32_t binding, vk::DescriptorImageInfo& info);
 
     private:
         ElemType _elemType;
