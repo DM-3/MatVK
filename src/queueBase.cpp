@@ -1,7 +1,6 @@
 #include "MatVK/queueBase.hpp"
-#include <fstream>
-#include <filesystem>
-#include <iostream>
+#include "MatVK/matrixSubres.hpp"
+#include "MatVK/scalarSubres.hpp"
 
 
 namespace matvk
@@ -64,7 +63,17 @@ namespace matvk
     }
 
     void QueueBase::createScalarBuffer()
-    {}
+    {
+        size_t size = 0;
+        for (auto s : _scalars)
+            size += sizeofType(s->type());
+
+        _scalarBuffer = std::make_unique<Buffer>(size, 
+            vk::BufferUsageFlagBits::eStorageBuffer |
+            vk::BufferUsageFlagBits::eTransferSrc |
+            vk::BufferUsageFlagBits::eTransferDst,
+            vk::MemoryPropertyFlagBits::eDeviceLocal);
+    }
 
     void QueueBase::createDescriptorSetLayout()
     {
@@ -136,7 +145,25 @@ namespace matvk
     {}
 
     void QueueBase::updateUniformBuffer()
-    {}
+    {
+        StagingBuffer stage(_scalarBuffer->size());
+        size_t pos = 0;
+
+        for (auto s : _scalars)
+        {
+            memcpy((void*)stage + pos, s->value(), sizeofType(s->type()));
+            pos += sizeofType(s->type());
+        }
+
+        vk::BufferCopy copy; copy
+            .setSize(_scalarBuffer->size())
+            .setSrcOffset(0)
+            .setDstOffset(0);
+
+        auto cmd = VKB::startOneTimeCommandBuffer();
+        cmd.copyBuffer(stage.buffer(), _scalarBuffer->buffer(), copy);
+        VKB::endOneTimeCommandBuffer(cmd);
+    }
 
     std::vector<std::shared_ptr<MatrixSubres>>& QueueBase::matrices()
     {
