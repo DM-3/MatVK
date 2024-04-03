@@ -121,6 +121,10 @@ namespace matvk
     {
     public:
         Scalar();
+        Scalar(const E& value);
+
+        void operator=(const E& value);
+        operator E() const;
     };
 
     template<element E>
@@ -206,6 +210,8 @@ namespace matvk
     class ScalarBase : public ExpressionBase
     {
     public:
+        void* value();
+
         void record(Shader& shader) const;
 
     private:
@@ -354,9 +360,27 @@ namespace matvk
 
 
     template<element E>
-    Scalar<E>::Scalar() : Expression<E>(std::static_pointer_cast<ExpressionBase>
-        (std::shared_ptr<ScalarBase>(new ScalarBase(enumerateType<E>()))))
+    Scalar<E>::Scalar() : Scalar(0)
     {}
+
+    template<element E>
+    Scalar<E>::Scalar(const E& value) : Expression<E>(std::static_pointer_cast<ExpressionBase>
+        (std::shared_ptr<ScalarBase>(new ScalarBase(enumerateType<E>()))))
+    {
+        operator=(value);
+    }
+
+    template<element E>
+    void Scalar<E>::operator=(const E& value)
+    {
+        *((E*)std::static_pointer_cast<ScalarBase>(this->_base)->value()) = value;
+    }
+
+    template<element E>
+    Scalar<E>::operator E() const
+    {
+        return *((E*)std::static_pointer_cast<ScalarBase>(this->_base)->value());
+    }
 
 
     template<element E>

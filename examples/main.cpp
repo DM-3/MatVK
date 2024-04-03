@@ -16,8 +16,8 @@ int main()
     Matrix<float> mA(size), mB(size);
 	Matrix<int> mC(64, 64), mD(64, 64);
 
-	Scalar<float> sA;
-	Scalar<int> sB;
+	Scalar<float> sA = 2.0f;
+	Scalar<int> sB = 5;
 
     std::vector<float> data(mA.nElems(), 1.0f);
     mA << data;
