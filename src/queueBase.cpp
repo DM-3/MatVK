@@ -18,7 +18,6 @@ namespace matvk
         if (!_scalarBuffer) return;
 
         VKB::device().destroyPipelineLayout(_pipelineLayout);     
-        VKB::device().freeDescriptorSets(_descriptorPool, _descriptorSet);
         VKB::device().destroyDescriptorPool(_descriptorPool);
         VKB::device().destroyDescriptorSetLayout(_descriptorSetLayout);
         VKB::device().freeCommandBuffers(VKB::commandPool(), _commandBuffer);
@@ -100,7 +99,21 @@ namespace matvk
     }
 
     void QueueBase::createDescriptorPool()
-    {}
+    {
+        std::vector<vk::DescriptorPoolSize> sizes(2);
+        sizes[0]
+            .setType(vk::DescriptorType::eStorageBuffer)
+            .setDescriptorCount(1);
+        sizes[1]
+            .setType(vk::DescriptorType::eStorageImage)
+            .setDescriptorCount(_matrices.size());
+
+        vk::DescriptorPoolCreateInfo poolCI; poolCI
+            .setMaxSets(1)
+            .setPoolSizes(sizes);
+
+        _descriptorPool = VKB::device().createDescriptorPool(poolCI);
+    }
 
     void QueueBase::createDescriptorSet()
     {}
