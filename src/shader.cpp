@@ -199,4 +199,11 @@ namespace matvk
         return str;
     }
 
+    Size2D Shader::dispatchSize()
+    {
+        return Size2D(
+            _outputSize.x / VKB::subgroupSize() + (_outputSize.x % VKB::subgroupSize() ? 1 : 0),
+            _outputSize.y / VKB::subgroupSize() + (_outputSize.y % VKB::subgroupSize() ? 1 : 0));
+    }
+
 };

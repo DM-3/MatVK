@@ -51,7 +51,7 @@ namespace matvk
             .setCommandBufferCount(1)
             .setCommandBuffers(_commandBuffer);
 
-        VKB::queue().submit(submit);
+        VKB::queue().submit(submit, _fence);
     }
 
     void QueueBase::waitFinished() 
@@ -178,7 +178,40 @@ namespace matvk
     }
 
     void QueueBase::createCommandBuffer()
-    {}
+    {
+        // allocate commandbuffer
+        vk::CommandBufferAllocateInfo cmdAI; cmdAI
+            .setCommandBufferCount(1)
+            .setCommandPool(VKB::commandPool())
+            .setLevel(vk::CommandBufferLevel::ePrimary);
+        
+        _commandBuffer = VKB::device().allocateCommandBuffers(cmdAI).front();
+
+        // begin commandbuffer
+        vk::CommandBufferBeginInfo cmdBI; cmdBI
+            .setFlags(vk::CommandBufferUsageFlagBits::eSimultaneousUse);
+
+        _commandBuffer.begin(cmdBI);
+
+        // record commandbuffer
+        _commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eCompute,
+            _pipelineLayout, 0, _descriptorSet, {});
+        
+        for (int i = 0; i < _pipelines.size(); i++)
+        {
+            _commandBuffer.bindPipeline(vk::PipelineBindPoint::eCompute, _pipelines[i]);
+            _commandBuffer.dispatch(
+                _shaders[i].dispatchSize().x,
+                _shaders[i].dispatchSize().y,
+                1);
+            _commandBuffer.pipelineBarrier(
+                vk::PipelineStageFlagBits::eComputeShader,
+                vk::PipelineStageFlagBits::eComputeShader,
+                vk::DependencyFlagBits(0), {}, {}, {});
+        }
+
+        _commandBuffer.end();
+    }
 
     void QueueBase::updateUniformBuffer()
     {

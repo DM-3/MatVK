@@ -21,6 +21,8 @@ namespace matvk
 
         std::string compile();
 
+        Size2D dispatchSize();
+
     private:
         QueueBase& _queueBase;
         std::string _scalars;

@@ -48,10 +48,10 @@ namespace matvk
         if (_recording)
             endRecording();
 
-        //_base->execute();
+        _base->execute();
         
-        //if (immediateWait)
-        //    _base->waitFinished();
+        if (immediateWait)
+            _base->waitFinished();
     }
 
     void Queue::waitFinished() 
