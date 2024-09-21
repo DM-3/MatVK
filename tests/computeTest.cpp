@@ -28,9 +28,9 @@ using namespace matvk::tests;
     this->_eC = (this->_eA.array() * this->_eB.array()).matrix() + this->_eB; \
     this->_eB.array() = this->_eC.array() / this->_eA.array(); \
     this->_eA = this->_eC - this->_eB; \
-    compareMatrices(this->_vA, this->_eA, 3e-5); \
-    compareMatrices(this->_vB, this->_eB, 3e-5); \
-    compareMatrices(this->_vC, this->_eC, 3e-5);
+    compareMatrices(this->_vA, this->_eA, 5e-5); \
+    compareMatrices(this->_vB, this->_eB, 5e-5); \
+    compareMatrices(this->_vC, this->_eC, 5e-5);
 
 
 

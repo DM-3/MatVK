@@ -104,7 +104,7 @@ namespace matvk
 
         std::filesystem::remove(name + ".comp");
 
-        std::ifstream spvFile(name + ".spv");
+        std::ifstream spvFile(name + ".spv", std::ios::binary);
         std::stringstream buffer;
         buffer << spvFile.rdbuf();
         spvFile.close();
