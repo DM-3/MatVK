@@ -14,11 +14,6 @@
 namespace matvk 
 {
 
-    void hardcodeSubgroupSize(uint32_t size);
-
-
-
-
 //---- types
 
     template<typename T>
@@ -103,6 +98,7 @@ namespace matvk
         Matrix(const Matrix<E>& other);
         Matrix(std::shared_ptr<MatrixBase> base);
     
+        Size2D size() const;
         size_t nElems() const;
 
         void operator<<(std::vector<E>& src);
@@ -186,6 +182,7 @@ namespace matvk
     class MatrixBase : public ExpressionBase
     {
     public:
+        Size2D size() const;
         size_t nElems() const;
 
         void write(void* src);
@@ -301,6 +298,12 @@ namespace matvk
     Matrix<E>::Matrix(std::shared_ptr<MatrixBase> base) : 
         Expression<E>(std::static_pointer_cast<ExpressionBase>(base))
     {}
+
+    template<element E>
+    Size2D Matrix<E>::size() const
+    {
+        return std::static_pointer_cast<MatrixBase>(this->_base)->size();
+    }
 
     template<element E>
     size_t Matrix<E>::nElems() const

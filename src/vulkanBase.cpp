@@ -1,6 +1,6 @@
 #include "MatVK/vulkanBase.hpp"
 #include <mutex>
-
+#include <iostream>
 
 namespace matvk
 {
@@ -60,7 +60,8 @@ namespace matvk
     }
 
 
-    vk::CommandBuffer VKB::startOneTimeCommandBuffer() {
+    vk::CommandBuffer VKB::startOneTimeCommandBuffer() 
+    {
         vk::CommandBufferAllocateInfo commandBufferAI; commandBufferAI
             .setCommandBufferCount(1)
             .setCommandPool(commandPool())
@@ -75,7 +76,8 @@ namespace matvk
         return commandBuffer;
     }
 
-    void VKB::endOneTimeCommandBuffer(vk::CommandBuffer commandBuffer) {
+    void VKB::endOneTimeCommandBuffer(vk::CommandBuffer commandBuffer) 
+    {
         commandBuffer.end();
 
         vk::Fence fence = device().createFence(vk::FenceCreateInfo());
@@ -164,9 +166,14 @@ namespace matvk
             .setQueueCount(1)
             .setQueuePriorities(priorities);
 
+        vk::PhysicalDeviceVulkan13Features features; features
+            .setComputeFullSubgroups(true)
+            .setSubgroupSizeControl(true);
+
         vk::DeviceCreateInfo deviceCI; deviceCI
             .setQueueCreateInfoCount(1)
-            .setQueueCreateInfos(queueCI);
+            .setQueueCreateInfos(queueCI)
+            .setPNext(&features);
 
         _device = _physicalDevice.createDevice(deviceCI);
         _queue = _device.getQueue(_queueFamilyIndex, 0);
@@ -186,12 +193,7 @@ namespace matvk
             <vk::PhysicalDeviceProperties2, vk::PhysicalDeviceSubgroupProperties>({});
         _subgroupSize = p.get<vk::PhysicalDeviceSubgroupProperties>().subgroupSize;
     }
-
-    void hardcodeSubgroupSize(uint32_t size)
-    {
-        VKB::getVKB()._subgroupSize = size;
-    }
-
+    
 
     vk::Format formatOfType(ElemType elemType)
     {

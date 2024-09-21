@@ -10,6 +10,11 @@ namespace matvk
         _sub(std::make_shared<MatrixSubres>(elemType, size)) 
     {}
 
+    Size2D MatrixBase::size() const
+    {
+        return _extents;
+    }
+
     size_t MatrixBase::nElems() const
     {
         return _extents.x * _extents.y;
@@ -36,6 +41,7 @@ namespace matvk
     {
         auto newMat = std::make_shared<MatrixBase>(*this);
         newMat->_offset = _offset + offset;
+        newMat->_extents = newMat->_extents - offset;
         return newMat;
     }
 

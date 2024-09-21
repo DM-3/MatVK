@@ -67,7 +67,8 @@ namespace matvk
         for (auto s : _scalars)
             size += sizeofType(s->type());
 
-        _scalarBuffer = std::make_unique<Buffer>(size, 
+        _scalarBuffer = std::make_unique<Buffer>(
+            size ? size : 4, 
             vk::BufferUsageFlagBits::eStorageBuffer |
             vk::BufferUsageFlagBits::eTransferSrc |
             vk::BufferUsageFlagBits::eTransferDst,
@@ -161,10 +162,14 @@ namespace matvk
 
             modules.push_back(VKB::device().createShaderModule(moduleCI));
 
+            vk::PipelineShaderStageRequiredSubgroupSizeCreateInfo rssCI; 
+            rssCI.requiredSubgroupSize = VKB::subgroupSize();
+
             vk::PipelineShaderStageCreateInfo stageCI; stageCI
                 .setModule(modules.back())
                 .setPName("main")
-                .setStage(vk::ShaderStageFlagBits::eCompute);
+                .setStage(vk::ShaderStageFlagBits::eCompute)
+                .setPNext(&rssCI);
 
             vk::ComputePipelineCreateInfo pipelineCI; pipelineCI
                 .setLayout(_pipelineLayout)
@@ -220,7 +225,7 @@ namespace matvk
 
         for (auto s : _scalars)
         {
-            memcpy((void*)stage + pos, s->value(), sizeofType(s->type()));
+            memcpy((char*)(void*)stage + pos, s->value(), sizeofType(s->type()));
             pos += sizeofType(s->type());
         }
 

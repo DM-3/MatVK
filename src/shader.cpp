@@ -67,7 +67,7 @@ namespace matvk
             "\n"
             "layout(binding = 0) buffer ScalarBuffer\n"
             "{\n"
-            + _scalars +
+            + (_scalars.empty() ? "int scalar_none;\n" : _scalars) +
             "} ubo;\n"
             "\n"
             + _images +
